@@ -1,0 +1,6 @@
+{
+    "builds": [
+      { "src": "wsgi.py", "use": "@vercel/python" }
+    ]
+  }
+  
