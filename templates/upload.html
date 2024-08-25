@@ -107,36 +107,57 @@
 
     <script>
         document.getElementById('uploadForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            
-            const fileInput = document.getElementById('fileInput');
-            const file = fileInput.files[0];
-            
-            if (!file) {
-                alert('Please select a file');
-                return;
-            }
+    event.preventDefault();
     
-            const formData = new FormData();
-            formData.append('file', file);
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
     
-            fetch('http://127.0.0.1:5000/upload', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                const resultDiv = document.getElementById('result');
-                resultDiv.innerHTML = `
-                    <h2>Results:</h2>
-                    <pre>${JSON.stringify(data, null, 2)}</pre>
-                `;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while processing the file.');
-            });
-        });
+    if (!file) {
+        alert('Please select a file');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    fetch('/upload', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        const resultDiv = document.getElementById('result');
+        
+        // Extract and organize data with proper checks
+        const index = data.Index !== undefined ? data.Index : 'N/A';
+        const totalRevenue = data['Total Revenue'] !== undefined ? data['Total Revenue'] : 'N/A';
+        const borrowingToRevenueRatio = data['Total Borrowing to Revenue Ratio'] !== undefined ? data['Total Borrowing to Revenue Ratio'] : 'N/A';
+        const iscrFlag = data['ISCR Flag'] !== undefined ? data['ISCR Flag'] : 'N/A';
+        const revenue5crFlag = data['Total Revenue 5cr Flag'] !== undefined ? data['Total Revenue 5cr Flag'] : 'N/A';
+        const borrowingToRevenueFlag = data['Borrowing to Revenue Flag'] !== undefined ? data['Borrowing to Revenue Flag'] : 'N/A';
+
+        // Create a formatted string
+        const formattedResult = `
+            <h2>Results:</h2>
+            <ul>
+                <li><strong>Index:</strong> ${index}</li>
+                <li><strong>Total Revenue:</strong> ${totalRevenue}</li>
+                <li><strong>Total Borrowing to Revenue Ratio:</strong> ${borrowingToRevenueRatio}</li>
+                <li><strong>ISCR Flag:</strong> ${iscrFlag}</li>
+                <li><strong>Total Revenue 5cr Flag:</strong> ${revenue5crFlag}</li>
+                <li><strong>Borrowing to Revenue Flag:</strong> ${borrowingToRevenueFlag}</li>
+            </ul>
+        `;
+        
+        // Set the resultDiv's innerHTML to the formatted string
+        resultDiv.innerHTML = formattedResult;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while processing the file.');
+    });
+});
+
     </script>
 </body>
 </html>
